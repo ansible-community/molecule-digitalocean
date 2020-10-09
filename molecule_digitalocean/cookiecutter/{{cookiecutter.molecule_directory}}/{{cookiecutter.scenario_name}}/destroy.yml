@@ -18,7 +18,7 @@
             skip_instances: true
 
     - name: Destroy molecule instance(s)
-      digital_ocean:
+      community.digitalocean.digital_ocean_droplet:
         name: "{{ item.instance }}"
         id: "{{ item.droplet_id }}"
         state: absent
@@ -36,9 +36,13 @@
       retries: 300
       with_items: "{{ server.results }}"
 
+    - name: Delete remote keypair
+      community.digitalocean.digital_ocean_sshkey:
+        fingerprint: "{{ item.remote_keypair_id }}"
+        state: absent
+      loop: "{{ instance_conf }}"
 
     # Mandatory configuration for Molecule to function.
-
     - name: Populate instance config
       set_fact:
         instance_conf: {}

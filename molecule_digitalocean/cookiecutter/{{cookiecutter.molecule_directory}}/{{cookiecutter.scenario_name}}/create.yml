@@ -8,10 +8,36 @@
   vars:
     ssh_user: root
     ssh_port: 22
-
     keypair_name: molecule_key
     keypair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
   tasks:
+    - name: Assert that mandatory variables are defined
+      assert:
+        that:
+          - item.name is defined
+          - item.region is defined
+          - item.size is defined
+        fail_msg: |
+          Ensure that you define instance name, region and size for each
+          instance in platforms in molecule.yml.
+          Example:
+
+          ---
+          dependency:
+            name: galaxy
+          driver:
+            name: digitalocean
+          platforms:
+            - name: instance
+              region: fra1
+              size: 2gb
+              image: ubuntu-20-04-x64
+          provisioner:
+            name: ansible
+          verifier:
+            name: ansible
+      loop: "{{ molecule_yml.platforms }}"
+
     - name: Create local keypair
       user:
         name: "{{ lookup('env', 'USER') }}"
@@ -20,25 +46,21 @@
       register: local_keypair
 
     - name: Create remote keypair
-      digital_ocean_sshkey:
+      community.digitalocean.digital_ocean_sshkey:
         name: "{{ keypair_name }}"
         ssh_pub_key: "{{ local_keypair.ssh_public_key }}"
-        state: present
       register: remote_keypair
 
     - name: Create molecule instance(s)
-      digital_ocean:
-        command: droplet
+      community.digitalocean.digital_ocean_droplet:
         name: "{{ item.name }}"
         unique_name: true
-        region_id: "{{ item.region_id }}"
-        image_id: "{{ item.image_id }}"
-        size_id: "{{ item.size_id }}"
-        ssh_key_ids: "{{ remote_keypair.data.ssh_key.id }}"
+        region: "{{ item.region }}"
+        image: "{{ item.image }}"
+        size: "{{ item.size }}"
+        ssh_keys: "{{ remote_keypair.data.ssh_key.id }}"
         private_networking: true
-        wait: true
         wait_timeout: 300
-        state: present
       register: server
       with_items: "{{ molecule_yml.platforms }}"
       async: 7200
@@ -56,13 +78,14 @@
 
     - name: Populate instance config dict
       set_fact:
-        instance_conf_dict: {
-          'instance': "{{ item.droplet.name }}",
-          'address': "{{ item.droplet.ip_address }}",
-          'user': "{{ ssh_user }}",
-          'port': "{{ ssh_port }}",
-          'identity_file': "{{ keypair_path }}",
-          'droplet_id': "{{ item.droplet.id }}", }
+        instance_conf_dict:
+          instance: "{{ item.data.droplet.name }}"
+          address: "{{ item.data.ip_address }}"
+          user: "{{ ssh_user }}"
+          port: "{{ ssh_port }}"
+          identity_file: "{{ keypair_path }}"
+          droplet_id: "{{ item.data.droplet.id }}"
+          remote_keypair_id: "{{ remote_keypair.data.ssh_key.id }}"
       with_items: "{{ digitalocean_jobs.results }}"
       register: instance_config_dict
       when: server.changed | bool
