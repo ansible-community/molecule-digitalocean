@@ -9,13 +9,13 @@ lint:
     config-file: ../../../resources/.yamllint
 platforms:
   - name: instance-1
-    region_id: nyc3
-    image_id: ubuntu-18-10-x64
-    size_id: s-1vcpu-1gb
+    region: nyc3
+    image: ubuntu-20-04-x64
+    size: s-1vcpu-1gb
   - name: instance-2
-    region_id: nyc3
-    image_id: ubuntu-18-10-x64
-    size_id: s-1vcpu-1gb
+    region: nyc3
+    image: ubuntu-20-04-x64
+    size: s-1vcpu-1gb
 provisioner:
   name: ansible
   playbooks:

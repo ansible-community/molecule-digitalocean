@@ -6,7 +6,6 @@ Requirements
 ============
 
 * ``DO_API_KEY`` or ``DO_API_TOKEN`` exposed in your environment
-* Only supported on Python 2.7, due to current dependency on dopy
 
 Install
 =======
