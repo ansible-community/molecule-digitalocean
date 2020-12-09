@@ -97,7 +97,7 @@
 
     - name: Dump instance config
       copy:
-        content: "{{ instance_conf | to_json | from_json | molecule_to_yaml | molecule_header }}"
+        content: "{{ instance_conf | to_json | from_json }}"
         dest: "{{ molecule_instance_config }}"
       when: server.changed | bool
 
@@ -108,5 +108,5 @@
         search_regex: SSH
         delay: 10
         timeout: 320
-      with_items: "{{ lookup('file', molecule_instance_config) | molecule_from_yaml }}"
+      with_items: "{{ lookup('file', molecule_instance_config) }}"
 {%- endraw %}
