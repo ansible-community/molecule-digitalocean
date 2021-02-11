@@ -30,7 +30,7 @@
           platforms:
             - name: instance
               region: fra1
-              size: 2gb
+              size: s-1vcpu-2gb
               image: ubuntu-20-04-x64
           provisioner:
             name: ansible
