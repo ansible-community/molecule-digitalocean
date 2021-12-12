@@ -6,9 +6,6 @@ Molecule DigitalOcean Plugin
    :target: https://badge.fury.io/py/molecule-digitalocean
    :alt: PyPI Package
 
-.. image:: https://img.shields.io/travis/com/pycontribs/molecule-digitalocean/master.svg?label=Linux%20builds%20%40%20Travis%20CI
-   :target: https://travis-ci.com/pycontribs/molecule-digitalocean
-
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/python/black
    :alt: Python Black Code Style
@@ -33,19 +30,38 @@ Documentation
 
 Read the documentation and more at https://molecule.readthedocs.io/.
 
+Sample ``molecule.yml``:
+::
+  ---
+  dependency:
+    name: galaxy
+  driver:
+    name: digitalocean
+  platforms:
+    - name: instance
+      region: fra1
+      size: s-1vcpu-2gb
+      image: ubuntu-20-04-x64
+  provisioner:
+    name: ansible
+  verifier:
+    name: ansible
+
+Please consult https://slugs.do-api.dev/ for sizes, images, regions, and more.
+
 .. _get-involved:
 
 Get Involved
 ============
 
-* Join us in the ``#ansible-molecule`` channel on `Freenode`_.
+* Join us in the ``#ansible-molecule`` channel on `Libera.Chat`_.
 * Join the discussion in `molecule-users Forum`_.
 * Join the community working group by checking the `wiki`_.
 * Want to know about releases, subscribe to `ansible-announce list`_.
 * For the full list of Ansible email Lists, IRC channels see the
   `communication page`_.
 
-.. _`Freenode`: https://freenode.net
+.. _`Libera.Chat`: https://libera.chat
 .. _`molecule-users Forum`: https://groups.google.com/forum/#!forum/molecule-users
 .. _`wiki`: https://github.com/ansible/community/wiki/Molecule
 .. _`ansible-announce list`: https://groups.google.com/group/ansible-announce

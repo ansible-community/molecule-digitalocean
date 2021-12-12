@@ -1,0 +1,116 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+
+  vars:
+
+    ssh_user: root
+    ssh_port: 22
+    keypair_name: molecule_key
+    keypair_path: "{{ lookup('ansible.builtin.env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
+
+  tasks:
+
+    - name: Assert that mandatory variables are defined
+      ansible.builtin.assert:
+        that:
+          - item.name is defined
+          - item.region is defined
+          - item.size is defined
+        fail_msg: |
+          Ensure that you define instance name, region, and size for each
+          instance under platforms in molecule.yml. Sizes, images, regions
+          (and more) can be found here: https://slugs.do-api.dev/
+
+          Example molecule.yml:
+          ---
+          dependency:
+            name: galaxy
+          driver:
+            name: digitalocean
+          platforms:
+            - name: instance
+              region: fra1
+              size: s-1vcpu-2gb
+              image: ubuntu-20-04-x64
+          provisioner:
+            name: ansible
+          verifier:
+            name: ansible
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Create local keypair
+      ansible.builtin.user:
+        name: "{{ lookup('ansible.builtin.env', 'USER') }}"
+        generate_ssh_key: true
+        ssh_key_file: "{{ keypair_path }}"
+      register: local_keypair
+
+    - name: Create remote keypair
+      community.digitalocean.digital_ocean_sshkey:
+        name: "{{ keypair_name }}"
+        ssh_pub_key: "{{ local_keypair.ssh_public_key }}"
+      register: remote_keypair
+
+    - name: Create molecule instance(s)
+      community.digitalocean.digital_ocean_droplet:
+        name: "{{ item.name }}"
+        state: active
+        unique_name: true
+        region: "{{ item.region }}"
+        image: "{{ item.image }}"
+        size: "{{ item.size }}"
+        ssh_keys: "{{ remote_keypair.data.ssh_key.id }}"
+        private_networking: true
+        wait_timeout: 300
+      register: server
+      with_items: "{{ molecule_yml.platforms }}"
+      async: 7200
+      poll: 0
+
+    - name: Wait for instance(s) creation to complete
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: digitalocean_jobs
+      until: digitalocean_jobs.finished
+      retries: 300
+      with_items: "{{ server.results }}"
+
+    # Mandatory configuration for Molecule to function.
+
+    - name: Populate instance config dict
+      ansible.builtin.set_fact:
+        instance_conf_dict:
+          instance: "{{ item.data.droplet.name }}"
+          address: "{{ item.data.droplet.networks.v4.0.ip_address }}"
+          user: "{{ ssh_user }}"
+          port: "{{ ssh_port }}"
+          identity_file: "{{ keypair_path }}"
+          droplet_id: "{{ item.data.droplet.id }}"
+          remote_keypair_id: "{{ remote_keypair.data.ssh_key.id }}"
+      with_items: "{{ digitalocean_jobs.results }}"
+      register: instance_config_dict
+      when: server.changed | bool
+
+    - name: Convert instance config dict to a list
+      ansible.builtin.set_fact:
+        instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
+      when: server.changed | bool
+
+    - name: Dump instance config
+      ansible.builtin.copy:
+        content: "{{ instance_conf | to_json | from_json | to_yaml }}"
+        dest: "{{ molecule_instance_config }}"
+      when: server.changed | bool
+
+    - name: Wait for SSH
+      ansible.builtin.wait_for:
+        port: "{{ ssh_port }}"
+        host: "{{ item.address }}"
+        search_regex: SSH
+        delay: 10
+        timeout: 320
+      with_items: "{{ lookup('file', molecule_instance_config) | from_yaml }}"

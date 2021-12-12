@@ -1,11 +1,11 @@
 ---
 repos:
-  - repo: https://github.com/PyCQA/doc8.git
-    rev: 0.8.1rc2
+  - repo: https://github.com/PyCQA/doc8
+    rev: 0.10.1
     hooks:
       - id: doc8
-  - repo: https://github.com/python/black.git
-    rev: 19.3b0
+  - repo: https://github.com/psf/black
+    rev: 21.12b0
     hooks:
       - id: black
         language_version: python3
@@ -19,21 +19,26 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
       - id: debug-statements
-  - repo: https://gitlab.com/pycqa/flake8.git
-    rev: 3.7.8
+        language_version: python3
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
     hooks:
       - id: flake8
         additional_dependencies:
-          - flake8-black
+          - pydocstyle>=5.1.1
+          - flake8-absolute-import
+          - flake8-black>=0.1.1
+          - flake8-docstrings>=1.5.0
+        language_version: python3
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.18.0
+    rev: v1.26.3
     hooks:
       - id: yamllint
         files: \.(yaml|yml)$
         types: [file, yaml]
         entry: yamllint --strict
   - repo: https://github.com/codespell-project/codespell.git
-    rev: v1.16.0
+    rev: v2.1.0
     hooks:
       - id: codespell
         name: codespell
@@ -44,3 +49,7 @@ repos:
         args: []
         require_serial: false
         additional_dependencies: []
+  - repo: https://github.com/ansible/ansible-lint.git
+    rev: v5.3.1
+    hooks:
+      - id: ansible-lint

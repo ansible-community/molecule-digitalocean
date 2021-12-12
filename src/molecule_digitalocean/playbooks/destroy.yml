@@ -1,0 +1,55 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - block:
+        - name: Populate instance config
+          set_fact:
+            instance_conf: "{{ lookup('file', molecule_instance_config) | from_yaml }}"
+            skip_instances: false
+      rescue:
+        - name: Populate instance config when file missing
+          set_fact:
+            instance_conf: [{}]
+            skip_instances: true
+
+    - when: not skip_instances
+      block:
+        - name: Destroy molecule instance(s)
+          community.digitalocean.digital_ocean_droplet:
+            name: "{{ item.instance }}"
+            id: "{{ item.droplet_id }}"
+            state: absent
+            unique_name: true
+          register: server
+          with_items: "{{ instance_conf }}"
+          async: 7200
+          poll: 0
+
+        - name: Wait for instance(s) deletion to complete
+          async_status:
+            jid: "{{ item.ansible_job_id }}"
+          register: digitalocean_jobs
+          until: digitalocean_jobs.finished
+          retries: 300
+          with_items: "{{ server.results }}"
+
+        - name: Delete remote keypair
+          community.digitalocean.digital_ocean_sshkey:
+            fingerprint: "{{ instance_conf[0].remote_keypair_id }}"
+            state: absent
+          when: instance_conf
+
+        # Mandatory configuration for Molecule to function.
+        - name: Populate instance config
+          set_fact:
+            instance_conf: {}
+
+        - name: Dump instance config
+          copy:
+            content: "{{ instance_conf | to_yaml }}"
+            dest: "{{ molecule_instance_config }}"
+          when: server.changed | bool
