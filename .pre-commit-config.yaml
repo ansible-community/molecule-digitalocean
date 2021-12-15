@@ -30,7 +30,7 @@ repos:
     hooks:
       - id: yamllint
         files: \.(yaml|yml)$
-        exclude: ^tests/molecule_digitalocean/cookiecutter/{{cookiecutter.molecule_directory}}
+        exclude: ^molecule_digitalocean/cookiecutter/{{cookiecutter.molecule_directory}}
         types: [file, yaml]
         entry: yamllint --strict
   - repo: https://github.com/codespell-project/codespell.git
