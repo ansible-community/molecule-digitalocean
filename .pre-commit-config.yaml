@@ -1,16 +1,16 @@
 ---
 repos:
-  - repo: https://github.com/PyCQA/doc8
+  - repo: https://github.com/PyCQA/doc8.git
     rev: 0.10.1
     hooks:
       - id: doc8
-  - repo: https://github.com/psf/black
+  - repo: https://github.com/python/black.git
     rev: 21.12b0
     hooks:
       - id: black
         language_version: python3
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v2.3.0
+    rev: v4.0.1
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -19,9 +19,8 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
       - id: debug-statements
-        language_version: python3
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+  - repo: https://gitlab.com/pycqa/flake8.git
+    rev: 3.9.2
     hooks:
       - id: flake8
         additional_dependencies:
@@ -35,6 +34,7 @@ repos:
     hooks:
       - id: yamllint
         files: \.(yaml|yml)$
+        exclude: ^molecule_digitalocean/cookiecutter/{{cookiecutter.molecule_directory}}
         types: [file, yaml]
         entry: yamllint --strict
   - repo: https://github.com/codespell-project/codespell.git
@@ -46,7 +46,7 @@ repos:
         entry: codespell
         language: python
         types: [text]
-        args: []
+        args: ["-L", "keypair"]
         require_serial: false
         additional_dependencies: []
   - repo: https://github.com/ansible/ansible-lint.git

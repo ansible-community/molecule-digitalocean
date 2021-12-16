@@ -23,11 +23,12 @@ import os
 import pytest
 
 from molecule import config
+from molecule_digitalocean.driver import DigitalOcean
 
 
 @pytest.fixture
 def _instance(patched_config_validate, config_instance):
-    return digitalocean.DigitalOcean(config_instance)
+    return DigitalOcean(config_instance)
 
 
 def test_config_private_member(_instance):
