@@ -1,4 +1,5 @@
 # !/usr/bin/env python
+"""Missing docstring."""
 import setuptools
 
 

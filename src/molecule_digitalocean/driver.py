@@ -80,19 +80,23 @@ class DigitalOcean(Driver):
     auth_env_vars = ["DO_API_TOKEN", "DO_API_KEY", "DO_OAUTH_TOKEN", "OAUTH_TOKEN"]
 
     def __init__(self, config=None):
+        """Missing docstring."""
         super(DigitalOcean, self).__init__(config)
         self._name = "digitalocean"
 
     @property
     def name(self):
+        """Missing docstring."""
         return self._name
 
     @name.setter
     def name(self, value):
+        """Missing docstring."""
         self._name = value
 
     @property
     def login_cmd_template(self):
+        """Missing docstring."""
         connection_options = " ".join(self.ssh_connection_options)
 
         return (
@@ -105,24 +109,30 @@ class DigitalOcean(Driver):
 
     @property
     def default_safe_files(self):
+        """Missing docstring."""
         return [self.instance_config]
 
     @property
     def default_ssh_connection_options(self):
+        """Missing docstring."""
         return self._get_ssh_connection_options()
 
     def template_dir(self):
-        """Return path to its own cookiecutterm templates. It is used by init
-        command in order to figure out where to load the templates from.
+        """Return path to its own cookiecutterm templates.
+
+        It is used by init command in order to figure out where to load the
+        templates from.
         """
         return os.path.join(os.path.dirname(__file__), "cookiecutter")
 
     def login_options(self, instance_name):
+        """Missing docstring."""
         d = {"instance": instance_name}
 
         return util.merge_dicts(d, self._get_instance_config(instance_name))
 
     def ansible_connection_options(self, instance_name):
+        """Missing docstring."""
         try:
             d = self._get_instance_config(instance_name)
 
@@ -157,6 +167,7 @@ class DigitalOcean(Driver):
         return None, None
 
     def sanity_checks(self):
+        """Missing docstring."""
         log.info("Sanity checks: '%s'", self._name)
 
         # Ensure that at least one of them is set:

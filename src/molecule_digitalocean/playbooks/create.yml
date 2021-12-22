@@ -53,6 +53,7 @@
       community.digitalocean.digital_ocean_sshkey:
         name: "{{ keypair_name }}"
         ssh_pub_key: "{{ local_keypair.ssh_public_key }}"
+        mode: "0644"
       register: remote_keypair
 
     - name: Create molecule instance(s)
@@ -81,7 +82,7 @@
 
     # Mandatory configuration for Molecule to function.
 
-    - name: Populate instance config dict
+    - name: Populate instance config dict  # noqa no-handler
       ansible.builtin.set_fact:
         instance_conf_dict:
           instance: "{{ item.data.droplet.name }}"
@@ -95,15 +96,16 @@
       register: instance_config_dict
       when: server.changed | bool
 
-    - name: Convert instance config dict to a list
+    - name: Convert instance config dict to a list  # noqa no-handler
       ansible.builtin.set_fact:
         instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
       when: server.changed | bool
 
-    - name: Dump instance config
+    - name: Dump instance config  # noqa no-handler
       ansible.builtin.copy:
         content: "{{ instance_conf | to_json | from_json | to_yaml }}"
         dest: "{{ molecule_instance_config }}"
+        mode: "0644"
       when: server.changed | bool
 
     - name: Wait for SSH

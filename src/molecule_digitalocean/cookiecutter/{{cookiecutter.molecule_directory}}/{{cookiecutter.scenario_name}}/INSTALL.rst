@@ -5,7 +5,8 @@ DigitalOcean driver installation guide
 Requirements
 ============
 
-* ``DO_API_KEY``, ``DO_API_TOKEN``, ``DO_OAUTH_TOKEN``, or ``OAUTH_TOKEN`` exposed in your environment
+* ``DO_API_KEY``, ``DO_API_TOKEN``, ``DO_OAUTH_TOKEN``, or ``OAUTH_TOKEN``
+  exposed in your environment
 
 Install
 =======

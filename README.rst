@@ -30,8 +30,8 @@ Documentation
 
 Read the documentation and more at https://molecule.readthedocs.io/.
 
-Sample ``molecule.yml``:
-::
+Sample ``molecule.yml``:::
+
   ---
   dependency:
     name: galaxy

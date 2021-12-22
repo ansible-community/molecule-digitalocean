@@ -17,6 +17,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+"""Missing docstring."""
 
 import os
 
@@ -32,10 +33,12 @@ def _instance(patched_config_validate, config_instance):
 
 
 def test_config_private_member(_instance):
+    """Missing docstring."""
     assert isinstance(_instance._config, config.Config)
 
 
 def test_testinfra_options_property(_instance):
+    """Missing docstring."""
     assert {
         "connection": "ansible",
         "ansible-inventory": _instance._config.provisioner.inventory_file,
@@ -43,16 +46,19 @@ def test_testinfra_options_property(_instance):
 
 
 def test_name_property(_instance):
+    """Missing docstring."""
     assert "digitalocean" == _instance.name
 
 
 def test_options_property(_instance):
+    """Missing docstring."""
     expected_options = {"managed": True}
 
     assert expected_options == _instance.options
 
 
 def test_login_cmd_template_property(_instance):
+    """Missing docstring."""
     expected_ssh_command = (
         "ssh {address} "
         "-l {user} -p {port} -i {identity_file} "
@@ -67,6 +73,7 @@ def test_login_cmd_template_property(_instance):
 
 
 def test_safe_files_property(_instance):
+    """Missing docstring."""
     expected_safe_files = [
         os.path.join(
             _instance._config.scenario.ephemeral_directory, "instance_config.yml"
@@ -77,6 +84,7 @@ def test_safe_files_property(_instance):
 
 
 def test_default_safe_files_property(_instance):
+    """Missing docstring."""
     expected_default_safe_files = [
         os.path.join(
             _instance._config.scenario.ephemeral_directory, "instance_config.yml"
@@ -87,14 +95,17 @@ def test_default_safe_files_property(_instance):
 
 
 def test_delegated_property(_instance):
+    """Missing docstring."""
     assert not _instance.delegated
 
 
 def test_managed_property(_instance):
+    """Missing docstring."""
     assert _instance.managed
 
 
 def test_default_ssh_connection_options_property(_instance):
+    """Missing docstring."""
     expected_ssh_defaults = [
         "-o UserKnownHostsFile=/dev/null",
         "-o ControlMaster=auto",
@@ -107,6 +118,7 @@ def test_default_ssh_connection_options_property(_instance):
 
 
 def test_login_options(mocker, _instance):
+    """Missing docstring."""
     m = mocker.patch("molecule.driver.digitalocean.DigitalOcean._get_instance_config")
     m.return_value = {
         "instance": "foo",
@@ -127,6 +139,7 @@ def test_login_options(mocker, _instance):
 
 
 def test_ansible_connection_options(mocker, _instance):
+    """Missing docstring."""
     m = mocker.patch("molecule.driver.digitalocean.DigitalOcean._get_instance_config")
     m.return_value = {
         "instance": "foo",
@@ -154,6 +167,7 @@ def test_ansible_connection_options(mocker, _instance):
 
 
 def test_ansible_connection_options_handles_missing_instance_config(mocker, _instance):
+    """Missing docstring."""
     m = mocker.patch("molecule.util.safe_load_file")
     m.side_effect = IOError
 
@@ -161,6 +175,7 @@ def test_ansible_connection_options_handles_missing_instance_config(mocker, _ins
 
 
 def test_ansible_connection_options_handles_missing_results_key(mocker, _instance):
+    """Missing docstring."""
     m = mocker.patch("molecule.util.safe_load_file")
     m.side_effect = StopIteration
 
@@ -168,6 +183,7 @@ def test_ansible_connection_options_handles_missing_results_key(mocker, _instanc
 
 
 def test_instance_config_property(_instance):
+    """Missing docstring."""
     expected_config_file = os.path.join(
         _instance._config.scenario.ephemeral_directory, "instance_config.yml"
     )
@@ -176,6 +192,7 @@ def test_instance_config_property(_instance):
 
 
 def test_ssh_connection_options_property(_instance):
+    """Missing docstring."""
     expected_ssh_options = [
         "-o UserKnownHostsFile=/dev/null",
         "-o ControlMaster=auto",
@@ -188,6 +205,7 @@ def test_ssh_connection_options_property(_instance):
 
 
 def test_status(mocker, _instance):
+    """Missing docstring."""
     result = _instance.status()
 
     assert 2 == len(result)
@@ -208,6 +226,7 @@ def test_status(mocker, _instance):
 
 
 def test_get_instance_config(mocker, _instance):
+    """Missing docstring."""
     m = mocker.patch("molecule.util.safe_load_file")
     m.return_value = [{"instance": "foo"}, {"instance": "bar"}]
 
@@ -216,8 +235,10 @@ def test_get_instance_config(mocker, _instance):
 
 
 def test_created(_instance):
+    """Missing docstring."""
     assert "false" == _instance._created()
 
 
 def test_converged(_instance):
+    """Missing docstring."""
     assert "false" == _instance._converged()
