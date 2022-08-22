@@ -34,7 +34,7 @@ repos:
         types: [file, yaml]
         entry: yamllint --strict
   - repo: https://github.com/codespell-project/codespell.git
-    rev: v2.1.0
+    rev: v2.2.1
     hooks:
       - id: codespell
         name: codespell
